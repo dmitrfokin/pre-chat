@@ -1,0 +1,39 @@
+<div class="preMeeting">
+  <div [hidden]="!userInformed">
+    Your meeting cannot be started. You should allow
+    the usage of your media devices to continue.
+  </div>
+  <div [hidden]="userInformed && !devicesReady">
+    Something is wrong with your devices.
+  </div>
+  <div [hidden]="!userInformed || !devicesReady">
+    <div *ngIf="devices.videoinput && devices.videoinput.length">
+      Select camera:
+      <select [(ngModel)]="videoInputSource" (ngModelchange)="start()">
+        <option *ngFor="let d of devices.videoinput" [value]="d.deviceId">
+          {{d.label}}
+        </option>
+      </select>
+    </div>
+    <div *ngIf="devices.audioinput && devices.audioinput.length">
+      Select audio input:
+      <select [(ngModel)]="audioInputSource" (change)="start()">
+        <option *ngFor="let d of devices.audioinput" [ngValue]="d.deviceId">
+          {{d.label}}
+        </option>
+      </select>
+    </div>
+    <div *ngIf="devices.audiooutput && devices.audiooutput.length">
+      Select audio input:
+      <select [(ngModel)]="audioOutputSource" (change)="setSinkId()">
+        <option *ngFor="let d of devices.audiooutput" [ngValue]="d.deviceId">
+          {{d.label}}
+        </option>
+      </select>
+    </div>
+    <video #localVideo id="localVideo" playsinline autoplay></video>
+    <div>
+      Meeting is going to start in a few minutes...
+    </div>
+  </div>
+</div>
