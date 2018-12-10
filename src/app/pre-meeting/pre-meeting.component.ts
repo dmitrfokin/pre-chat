@@ -7,8 +7,8 @@ import { Component, ElementRef, AfterViewInit, ViewChild } from '@angular/core';
 })
 export class PreMeetingComponent implements AfterViewInit {
   @ViewChild('localVideo') localVideo: ElementRef;
-  userInformed: boolean;
   devicesReady: boolean;
+  activePage: number;
   devices: any = {};
   audioInputSource: string;
   videoInputSource: string;
@@ -16,7 +16,7 @@ export class PreMeetingComponent implements AfterViewInit {
   stream: any;
 
   constructor() {
-    this.userInformed = confirm('You will be asked for permissions to use your media devices. You have to agree to continue your call.');
+    this.activePage = 0;
   }
 
   getDevices() {
@@ -47,17 +47,25 @@ export class PreMeetingComponent implements AfterViewInit {
   setSinkId() {
     if (typeof this.localVideo.nativeElement.sinkId === 'undefined') {
       console.log('Browser does not support output device selection.');
-      return this.devicesReady = false;
+      return this.activePage = 3;
     }
 
     this.localVideo.nativeElement.setSinkId(this.audioOutputSource)
       .then(() => {
-        this.devicesReady = true;
+        this.activePage = 3;
       })
       .catch(err => {
-        this.devicesReady = false;
+        this.activePage = 3;
         console.error(err.message);
       });
+  }
+
+  mute() {
+    this.stream.getAudioTracks()[0].enabled = !(this.stream.getAudioTracks()[0].enabled);
+  }
+
+  muteCamera() {
+    this.stream.getVideoTracks()[0].enabled = !(this.stream.getVideoTracks()[0].enabled);
   }
 
   start() {
@@ -86,9 +94,13 @@ export class PreMeetingComponent implements AfterViewInit {
     }
   }
 
-  ngAfterViewInit() {
+  initCamera() {
+    this.activePage = 2;
     this.start();
     this.getDevices();
+  }
+
+  ngAfterViewInit() {
   }
 
 }

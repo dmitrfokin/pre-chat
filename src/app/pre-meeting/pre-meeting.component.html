@@ -1,12 +1,17 @@
 <div class="preMeeting">
-  <div [hidden]="!userInformed">
+  <div [hidden]="activePage !== 0">
+    You will be asked for permissions to use your media devices. You have to agree to continue your call.
+    <button class="btn btn-primary" (click)="initCamera()">Accept</button>
+    <button class="btn btn-danger" (click)="activePage = 1">Decline</button>
+  </div>
+  <div [hidden]="activePage !== 1">
     Your meeting cannot be started. You should allow
     the usage of your media devices to continue.
   </div>
-  <div [hidden]="userInformed && !devicesReady">
+  <div [hidden]="activePage !== 2 || !devicesReady">
     Something is wrong with your devices.
   </div>
-  <div [hidden]="!userInformed || !devicesReady">
+  <div [hidden]="activePage !== 2 || !devicesReady">
     <div *ngIf="devices.videoinput && devices.videoinput.length">
       Select camera:
       <select [(ngModel)]="videoInputSource" (ngModelchange)="start()">
@@ -31,9 +36,17 @@
         </option>
       </select>
     </div>
-    <video #localVideo id="localVideo" playsinline autoplay></video>
-    <div>
-      Meeting is going to start in a few minutes...
-    </div>
+  </div>
+  <video *ngIf="activePage >= 2" [hidden]="!devicesReady" #localVideo id="localVideo" playsinline autoplay></video>
+  <div [hidden]="!devicesReady || activePage !== 2">
+    If you can hear your voice and see your camera press next to continue...
+    <button (click)="activePage = 3" class="btn btn-primary">Next</button>
+  </div>
+  <div [hidden]="activePage !== 3">
+    <button class="btn btn-primary" (click)="mute()">Mute/Unmute</button>
+    <button class="btn btn-primary" (click)="muteCamera()">Turn camera on/off</button>
+  </div>
+  <div [hidden]="activePage !== 3">
+    Meeting is going to start in a few minutes...
   </div>
 </div>
